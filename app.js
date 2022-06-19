@@ -1,7 +1,8 @@
 const express = require('express');
-//const path = require('path');
+const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const usersRouter = require('./routes/users')
 // eslint-disable-next-line no-undef
 const { PORT = 3000 } = process.env;
 
@@ -15,7 +16,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true
 });
 
-//app.use(express.static(path.resolve(__dirname, 'build')));
+app.use('/users', usersRouter);
+
+// eslint-disable-next-line no-undef
+app.use(express.static(path.resolve(__dirname, 'build')));
 
 app.listen(PORT, () => {
     // Если всё работает, консоль покажет, какой порт приложение слушает

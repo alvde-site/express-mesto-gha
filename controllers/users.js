@@ -6,7 +6,7 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: "Произошла ошибка" }));
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => res.send({ data: user }))
     .catch((err) =>
@@ -14,7 +14,7 @@ module.exports.getUser = (req, res) => {
     );
 };
 
-// сработает при POST-запросе на URL /films
+// сработает при POST-запросе на URL /users
 module.exports.createUser =  (req, res) => {
   const { name, about, avatar } = req.body;
 
