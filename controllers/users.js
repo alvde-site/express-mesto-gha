@@ -11,8 +11,9 @@ module.exports.getUserById = (req, res) => {
     .then((user) => {
       if (!user) {
         throw new Error(`Error_404`);
+      } else {
+        res.send({ data: user });
       }
-      res.send({ data: user });
     })
     .catch((err) => {
       if (err.message === `Error_404`) {
@@ -54,11 +55,33 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   // обновим имя найденного по _id пользователя
-  User.findByIdAndUpdate(req.user._id, { name, about }, {
-    new: true
-  })
-    .then((user) => res.send(user))
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    {
+      new: true,
+    }
+  )
+    .then((user) => {
+      if (
+        user.name.length < 2 ||
+        user.name.length > 30 ||
+        user.about.length < 2 ||
+        user.about.length > 30
+      ) {
+        throw new Error(`Error_400`);
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => {
+      if (err.message === `Error_400`) {
+        res.status(404).send({
+          message: "Переданы некорректные данные при обновлении профиля",
+        });
+
+        return;
+      }
       if (err.name === "ValidationError") {
         res.status(400).send({
           message: "Переданы некорректные данные при обновлении профиля",
