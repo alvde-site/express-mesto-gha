@@ -28,6 +28,10 @@ app.use('/users', usersRouter);
 
 app.use('/cards', cardsRouter);
 
+app.use((req, res) => {
+  res.status(404).send({ message: "Извините, я не могу это найти!" })
+})
+
 app.listen(PORT, () => {
     // Если всё работает, консоль покажет, какой порт приложение слушает
     console.log(`App listening on port ${PORT}`);
