@@ -54,7 +54,9 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   // обновим имя найденного по _id пользователя
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
+    new: true
+  })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
