@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const usersRouter = require('./routes/users')
 const cardsRouter = require('./routes/cards')
-// eslint-disable-next-line no-undef
+const process = require('process');
 const { PORT = 3000 } = process.env;
 
 const app = express();
