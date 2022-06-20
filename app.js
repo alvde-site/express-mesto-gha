@@ -16,8 +16,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true
 });
 
-app.use('/users', usersRouter);
-
 app.use((req, res, next) => {
   req.user = {
     _id: '62af707a7fc9d3cbaea33221' // вставьте сюда _id созданного в предыдущем пункте пользователя
@@ -25,6 +23,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use('/users', usersRouter);
 
 app.use('/cards', cardsRouter);
 
