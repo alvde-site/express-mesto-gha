@@ -6,7 +6,6 @@
     },
     "extends": [
         "eslint:recommended"
-        //"plugin:react/recommended"
     ],
     "parserOptions": {
         "ecmaFeatures": {
@@ -14,9 +13,6 @@
         },
         "ecmaVersion": "latest"
     },
-    // "plugins": [
-    //     "react"
-    // ],
     "rules": {
       "no-underscore-dangle": "off"
     }
