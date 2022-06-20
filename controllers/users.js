@@ -11,7 +11,13 @@ module.exports.getUserById = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "CastError") {
-        res.status(404).send({
+        res.status(400).send({
+          message: "Пользователь по указанному _id не найден",
+        });
+        return;
+      }
+      if (err.name === "CastError") {
+        res.status(400).send({
           message: "Пользователь по указанному _id не найден",
         });
         return;
