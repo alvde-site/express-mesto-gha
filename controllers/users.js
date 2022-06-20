@@ -8,18 +8,25 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        throw new Error(`Error_404`);
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(400).send({
-          message: "Пользователь по указанному _id не найден",
+      if (err.message === `Error_404`) {
+        res.status(404).send({
+          message: "Пользователь по указанному_id в БД не найден",
         });
+
         return;
       }
       if (err.name === "CastError") {
         res.status(400).send({
           message: "Пользователь по указанному _id не найден",
         });
+
         return;
       }
       res.status(500).send({ message: err.message });
