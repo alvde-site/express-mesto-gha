@@ -93,21 +93,10 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true }
   )
-  .then((card) => {
-    if (!card) {
-      throw new Error(`Error_404`);
-    } else {
-      res.send({ data: card });
-    }
-  })
+  .then((card) =>
+      res.send({ data: card })
+  )
     .catch((err) => {
-      if (err.message === `Error_404`) {
-        res.status(404).send({
-          message: "Карточки по указанному_id в БД не найден",
-        });
-
-        return;
-      }
       if (err.name === "ValidationError") {
         res.status(400).send({
           message: "Переданы некорректные данные для снятия лайка",
@@ -115,7 +104,7 @@ module.exports.dislikeCard = (req, res) => {
         return;
       }
       if (err.name === "CastError") {
-        res.status(404).send({
+        res.status(400).send({
           message: "Передан несуществующий _id карточки",
         });
         return;
