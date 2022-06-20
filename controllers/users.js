@@ -76,7 +76,7 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.message === `Error_400`) {
-        res.status(404).send({
+        res.status(400).send({
           message: "Переданы некорректные данные при обновлении профиля",
         });
 
