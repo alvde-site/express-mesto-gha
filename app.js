@@ -1,8 +1,8 @@
 const express = require('express');
-const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const usersRouter = require('./routes/users')
+const cardsRouter = require('./routes/cards')
 // eslint-disable-next-line no-undef
 const { PORT = 3000 } = process.env;
 
@@ -18,11 +18,18 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use('/users', usersRouter);
 
-// eslint-disable-next-line no-undef
-app.use(express.static(path.resolve(__dirname, 'build')));
+app.use((req, res, next) => {
+  req.user = {
+    _id: '62af707a7fc9d3cbaea33221' // вставьте сюда _id созданного в предыдущем пункте пользователя
+  };
+
+  next();
+});
+
+app.use('/cards', cardsRouter);
 
 app.listen(PORT, () => {
     // Если всё работает, консоль покажет, какой порт приложение слушает
-    console.log(`App listening on port ${PORT}`)
+    console.log(`App listening on port ${PORT}`);
 })
 
