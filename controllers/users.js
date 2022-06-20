@@ -30,3 +30,10 @@ module.exports.updateUser =  (req, res) => {
     .then(user => res.send({ data: user }))
     .catch(err => res.status(500).send({ message: "Произошла ошибка", error: err }));
 };
+
+module.exports.updateUserAvatar =  (req, res) => {
+  // обновим имя найденного по _id пользователя
+  User.findByIdAndUpdate(req.user._id, { avatar: 'http://изменили аватар' })
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: "Произошла ошибка", error: err }));
+};
