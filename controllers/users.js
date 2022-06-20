@@ -99,8 +99,12 @@ module.exports.updateUser = (req, res) => {
 };
 
 module.exports.updateUserAvatar = (req, res) => {
+  const { avatar } = req.body;
   // обновим имя найденного по _id пользователя
-  User.findByIdAndUpdate(req.user._id, { avatar: "http://изменили аватар" })
+  User.findByIdAndUpdate(req.user._id, { avatar },
+  {
+    new: true,
+  })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
