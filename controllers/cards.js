@@ -93,10 +93,21 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true }
   )
-  .then((card) =>
-      res.send({ data: card })
-  )
-    .catch((err) => {
+  .then((card) => {
+    if (!card) {
+      throw new Error(`Error_404`);
+    } else {
+      res.send({ data: card });
+    }
+  })
+  .catch((err) => {
+    if (err.message === `Error_404`) {
+      res.status(404).send({
+        message: "Карточка по указанному_id в БД не найдена",
+      });
+
+      return;
+    }
       if (err.name === "ValidationError") {
         res.status(400).send({
           message: "Переданы некорректные данные для снятия лайка",
