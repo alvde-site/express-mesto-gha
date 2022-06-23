@@ -3,16 +3,16 @@ const jwt = require('jsonwebtoken');
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   // достаём авторизационный заголовок
-  const { authorization } = req.headers;
+  const { cookie } = req.headers;
 
   // убеждаемся, что он есть или начинается с Bearer
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (!cookie) {
     return res
       .status(401)
-      .send({ message: 'Необходима авторизация', authorization: req.headers });
+      .send({ message: 'Необходима авторизация' });
   }
   // извлечём токен
-  const token = authorization.replace('Bearer ', '');
+  const token = cookie.replace('jwt=', '');
   let payload;
 
   try {
