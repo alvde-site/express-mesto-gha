@@ -26,7 +26,6 @@ module.exports = (req, res, next) => {
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
-  res.send({ mytoken: token });
 
   next(); // пропускаем запрос дальше
 };

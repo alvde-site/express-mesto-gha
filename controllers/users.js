@@ -30,7 +30,7 @@ module.exports.getCurrentUser = (req, res) => {
       if (!user) {
         throw new Error('Error_404');
       } else {
-        res.send({ data: user._id });
+        res.send({ data: user });
       }
     })
     .catch((err) => {
