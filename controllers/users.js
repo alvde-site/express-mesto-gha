@@ -25,7 +25,31 @@ module.exports.createUser = (req, res) => {
 };
 
 module.exports.getCurrentUser = (req, res) => {
-  res.send(req.user._id);
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new Error('Error_404');
+      } else {
+        res.send({ data: user });
+      }
+    })
+    .catch((err) => {
+      if (err.message === 'Error_404') {
+        res.status(404).send({
+          message: 'Пользователь по указанному_id в БД не найден',
+        });
+
+        return;
+      }
+      if (err.name === 'CastError') {
+        res.status(400).send({
+          message: 'Пользователь по указанному _id не найден',
+        });
+
+        return;
+      }
+      res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.getUsers = (req, res) => {
