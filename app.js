@@ -9,6 +9,7 @@ const {
   createUser,
   login,
 } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 
@@ -22,21 +23,21 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '62b38ec23d0367f63dd3d08b', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '62b38ec23d0367f63dd3d08b'
+//   };
 
-  next();
-});
+//   next();
+// });
 
 app.post('/signin', login);
 
 app.post('/signup', createUser);
 
-app.use('/users', usersRouter);
+app.use('/users', auth, usersRouter);
 
-app.use('/cards', cardsRouter);
+app.use('/cards', auth, cardsRouter);
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Извините, я не могу это найти!' });

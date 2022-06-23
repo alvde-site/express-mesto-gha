@@ -30,7 +30,7 @@ module.exports.getCurrentUser = (req, res) => {
       if (!user) {
         throw new Error('Error_404');
       } else {
-        res.send({ data: user });
+        res.send({ data: user._id });
       }
     })
     .catch((err) => {
@@ -103,7 +103,7 @@ module.exports.login = (req, res) => {
           // token - наш JWT токен, который мы отправляем
           httpOnly: true,
         })
-        .send({ token }); // если у ответа нет тела, можно использовать метод end
+        .send({ token, user: user._id }); // если у ответа нет тела, можно использовать метод end
     })
     .catch((err) => {
       // возвращаем ошибку аутентификации

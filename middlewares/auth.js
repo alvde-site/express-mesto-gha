@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return res
       .status(401)
-      .send({ message: 'Необходима авторизация' });
+      .send({ message: 'Необходима авторизация', authorization: req.headers });
   }
   // извлечём токен
   const token = authorization.replace('Bearer ', '');
@@ -22,10 +22,11 @@ module.exports = (req, res, next) => {
     // отправим ошибку, если не получилось
     return res
       .status(401)
-      .send({ message: 'Необходима авторизация' });
+      .send({ message: 'Необходима авторизация', mytoken: token });
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
+  res.send({ mytoken: token });
 
   next(); // пропускаем запрос дальше
 };
