@@ -24,6 +24,10 @@ module.exports.createUser = (req, res) => {
     });
 };
 
+module.exports.getCurrentUser = (req, res) => {
+  res.send(req.user._id);
+};
+
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
@@ -75,7 +79,7 @@ module.exports.login = (req, res) => {
           // token - наш JWT токен, который мы отправляем
           httpOnly: true,
         })
-        .end(); // если у ответа нет тела, можно использовать метод end
+        .send({ token }); // если у ответа нет тела, можно использовать метод end
     })
     .catch((err) => {
       // возвращаем ошибку аутентификации
