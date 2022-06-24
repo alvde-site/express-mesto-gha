@@ -87,9 +87,9 @@ module.exports.getUserById = (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  return User.findOne({ email }).select('+password')
     .then((user) => { // аутентификация успешна! пользователь в переменной user
       // создадим токен
       const token = jwt.sign(
