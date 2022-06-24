@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
     // отправим ошибку, если не получилось
     return res
       .status(401)
-      .send({ message: 'Необходима авторизация', mytoken: token });
+      .send({ message: 'Необходима авторизация' });
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
