@@ -6,26 +6,55 @@ module.exports.getCards = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 module.exports.deleteCards = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((user) => {
-      if (!user) {
-        throw new Error('Error_404');
-      } else {
-        res.send({ data: user });
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      const owner = `${card.owner}`;
+      if (req.user._id !== owner) {
+        return Promise.reject(new Error('Error_403'));
       }
+      return Card.findByIdAndRemove(req.params.cardId)
+        .then(() => {
+          if (!card) {
+            throw new Error('Error_404');
+          } else {
+            res.send({ data: card });
+          }
+        })
+        .catch((err) => {
+          if (err.message === 'Error_404') {
+            res.status(404).send({
+              message: 'Карточки по указанному_id в БД не найден',
+            });
+
+            return;
+          }
+          if (err.name === 'CastError') {
+            res.status(400).send({
+              message: 'Карточка с указанным _id не найдена',
+            });
+            return;
+          }
+          res.status(500).send({ message: err.message });
+        });
     })
     .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({
+          message: 'Карточка с указанным _id не найдена',
+        });
+        return;
+      }
+      if (err.message === 'Error_403') {
+        res.status(403).send({
+          message: 'Нельзя удалить чужую карточку',
+        });
+        return;
+      }
       if (err.message === 'Error_404') {
         res.status(404).send({
           message: 'Карточки по указанному_id в БД не найден',
         });
 
-        return;
-      }
-      if (err.name === 'CastError') {
-        res.status(400).send({
-          message: 'Карточка с указанным _id не найдена',
-        });
         return;
       }
       res.status(500).send({ message: err.message });
