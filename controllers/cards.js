@@ -8,6 +8,7 @@ module.exports.getCards = (req, res) => {
     .then((cards) => res.send({ data: cards }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
+
 module.exports.deleteCards = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
@@ -16,11 +17,11 @@ module.exports.deleteCards = (req, res, next) => {
         throw new ForbiddenError('Нельзя удалить чужую карточку');
       }
       return Card.findByIdAndRemove(req.params.cardId)
-        .then(() => {
-          if (!card) {
+        .then((deletedCard) => {
+          if (!deletedCard) {
             throw new NotFoundError('Карточки по указанному_id в БД не найден');
           } else {
-            res.send({ data: card });
+            res.send({ data: deletedCard });
           }
         })
         .catch((err) => {
