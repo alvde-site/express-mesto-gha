@@ -1,4 +1,5 @@
 const usersRouter = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 
 const {
   getUsers,
@@ -12,7 +13,12 @@ usersRouter.get('/me', getCurrentUser);
 
 usersRouter.get('/', getUsers);
 
-usersRouter.get('/:userId', getUserById);
+usersRouter.get('/:userId', celebrate({
+  // валидируем параметры
+  params: Joi.object().keys({
+    postId: Joi.string().alphanum().length(24),
+  }),
+}), getUserById);
 
 usersRouter.patch('/me', updateUser);
 
