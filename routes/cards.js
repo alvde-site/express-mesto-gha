@@ -12,7 +12,6 @@ const {
 cardsRouter.get('/', getCards);
 
 cardsRouter.delete('/:cardId', deleteCards);
-
 cardsRouter.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),

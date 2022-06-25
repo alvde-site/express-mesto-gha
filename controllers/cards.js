@@ -34,8 +34,8 @@ module.exports.deleteCards = (req, res, next) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Карточка с указанным _id не найдена');
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
