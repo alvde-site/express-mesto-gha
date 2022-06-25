@@ -20,8 +20,18 @@ cardsRouter.post('/', celebrate({
   }).unknown(true),
 }), createCard);
 
-cardsRouter.put('/:cardId/likes', likeCard);
+cardsRouter.put('/:cardId/likes', celebrate({
+  // валидируем параметры
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), likeCard);
 
-cardsRouter.delete('/:cardId/likes', dislikeCard);
+cardsRouter.delete('/:cardId/likes', celebrate({
+  // валидируем параметры
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), dislikeCard);
 
 module.exports = cardsRouter;
