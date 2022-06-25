@@ -1,40 +1,35 @@
 const Card = require('../models/card');
+const ForbiddenError = require('../errors/forbidden-err');
+const NotFoundError = require('../errors/not-found-err');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
-module.exports.deleteCards = (req, res) => {
+module.exports.deleteCards = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       const owner = `${card.owner}`;
       if (req.user._id !== owner) {
-        return Promise.reject(new Error('Error_403'));
+        throw new ForbiddenError('Нельзя удалить чужую карточку');
       }
       return Card.findByIdAndRemove(req.params.cardId)
         .then(() => {
           if (!card) {
-            throw new Error('Error_404');
+            throw new NotFoundError('Карточки по указанному_id в БД не найден');
           } else {
             res.send({ data: card });
           }
         })
         .catch((err) => {
-          if (err.message === 'Error_404') {
-            res.status(404).send({
-              message: 'Карточки по указанному_id в БД не найден',
-            });
-
-            return;
-          }
           if (err.name === 'CastError') {
             res.status(400).send({
               message: 'Карточка с указанным _id не найдена',
             });
             return;
           }
-          res.status(500).send({ message: err.message });
+          next(err);
         });
     })
     .catch((err) => {
@@ -44,24 +39,11 @@ module.exports.deleteCards = (req, res) => {
         });
         return;
       }
-      if (err.message === 'Error_403') {
-        res.status(403).send({
-          message: 'Нельзя удалить чужую карточку',
-        });
-        return;
-      }
-      if (err.message === 'Error_404') {
-        res.status(404).send({
-          message: 'Карточки по указанному_id в БД не найден',
-        });
-
-        return;
-      }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   /* напишите код здесь */
@@ -74,11 +56,11 @@ module.exports.createCard = (req, res) => {
         });
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -86,19 +68,12 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new Error('Error_404');
+        throw new NotFoundError('Карточки по указанному_id в БД не найден');
       } else {
         res.send({ data: card });
       }
     })
     .catch((err) => {
-      if (err.message === 'Error_404') {
-        res.status(404).send({
-          message: 'Карточки по указанному_id в БД не найден',
-        });
-
-        return;
-      }
       if (err.name === 'ValidationError') {
         res.status(400).send({
           message: 'Переданы некорректные данные для постановки лайка',
@@ -111,11 +86,11 @@ module.exports.likeCard = (req, res) => {
         });
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -123,19 +98,12 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new Error('Error_404');
+        throw new NotFoundError('Карточки по указанному_id в БД не найден');
       } else {
         res.send({ data: card });
       }
     })
     .catch((err) => {
-      if (err.message === 'Error_404') {
-        res.status(404).send({
-          message: 'Карточка по указанному_id в БД не найдена',
-        });
-
-        return;
-      }
       if (err.name === 'ValidationError') {
         res.status(400).send({
           message: 'Переданы некорректные данные для снятия лайка',
@@ -148,6 +116,6 @@ module.exports.dislikeCard = (req, res) => {
         });
         return;
       }
-      res.status(500).send({ message: err.message });
+      next(err);
     });
 };

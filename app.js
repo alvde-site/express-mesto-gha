@@ -23,14 +23,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '62b38ec23d0367f63dd3d08b'
-//   };
-
-//   next();
-// });
-
 app.post('/signin', login);
 
 app.post('/signup', createUser);
@@ -41,6 +33,20 @@ app.use('/cards', auth, cardsRouter);
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Извините, я не могу это найти!' });
+});
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
 });
 
 app.listen(PORT);
