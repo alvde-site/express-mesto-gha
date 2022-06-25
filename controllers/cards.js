@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const ForbiddenError = require('../errors/forbidden-err');
 const NotFoundError = require('../errors/not-found-err');
+const BadRequestError = require('../errors/bad-request-err');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -24,23 +25,17 @@ module.exports.deleteCards = (req, res, next) => {
         })
         .catch((err) => {
           if (err.name === 'CastError') {
-            res.status(400).send({
-              message: 'Карточка с указанным _id не найдена',
-            });
-            return;
+            throw new BadRequestError('Карточка с указанным _id не найдена');
           }
-          next(err);
-        });
+        })
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({
-          message: 'Карточка с указанным _id не найдена',
-        });
-        return;
+        throw new BadRequestError('Карточка с указанным _id не найдена');
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -51,13 +46,10 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'Переданы некорректные данные при создании карточки',
-        });
-        return;
+        throw new BadRequestError('Переданы некорректные данные при создании карточки');
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -75,19 +67,13 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'Переданы некорректные данные для постановки лайка',
-        });
-        return;
+        throw new BadRequestError('Переданы некорректные данные для постановки лайка');
       }
       if (err.name === 'CastError') {
-        res.status(400).send({
-          message: 'Передан несуществующий _id карточки',
-        });
-        return;
+        throw new BadRequestError('Карточка с указанным _id не найдена');
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -105,17 +91,11 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({
-          message: 'Переданы некорректные данные для снятия лайка',
-        });
-        return;
+        throw new BadRequestError('Переданы некорректные данные для снятия лайка');
       }
       if (err.name === 'CastError') {
-        res.status(400).send({
-          message: 'Передан несуществующий _id карточки',
-        });
-        return;
+        throw new BadRequestError('Карточка с указанным _id не найдена');
       }
-      next(err);
-    });
+    })
+    .catch(next);
 };
