@@ -17,23 +17,26 @@ module.exports.deleteCards = (req, res, next) => {
         throw new ForbiddenError('Нельзя удалить чужую карточку');
       }
       return Card.findByIdAndRemove(req.params.cardId)
-        .then((deletedCard) => {
-          if (!deletedCard) {
+        .then(() => {
+          if (!card) {
             throw new NotFoundError('Карточки по указанному_id в БД не найден');
           } else {
-            res.send({ data: deletedCard });
+            res.send({ data: card });
           }
         })
         .catch((err) => {
           if (err.name === 'CastError') {
             throw new BadRequestError('Карточка с указанным _id не найдена');
           }
-        })
-        .catch(next);
+          next(err);
+        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Карточка с указанным _id не найдена');
+      }
+      if (err.name === 'TypeError') {
+        throw new NotFoundError('Карточки по указанному_id в БД не найден');
       }
     })
     .catch(next);
