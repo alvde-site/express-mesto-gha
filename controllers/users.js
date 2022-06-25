@@ -64,8 +64,8 @@ module.exports.getUserById = (req, res, next) => {
       if (err.name === 'CastError') {
         throw new BadRequestError('Пользователь по указанному _id не найден');
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.login = (req, res, next) => {
