@@ -39,7 +39,8 @@ module.exports.deleteCards = (req, res, next) => {
         throw new NotFoundError('Карточки по указанному_id в БД не найден');
       }
       next(err);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
