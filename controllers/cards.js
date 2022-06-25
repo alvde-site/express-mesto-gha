@@ -38,8 +38,8 @@ module.exports.deleteCards = (req, res, next) => {
       if (err.name === 'TypeError') {
         throw new NotFoundError('Карточки по указанному_id в БД не найден');
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.createCard = (req, res, next) => {
@@ -52,8 +52,8 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные при создании карточки');
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
