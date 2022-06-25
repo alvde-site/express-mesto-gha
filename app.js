@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -25,7 +26,15 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.post('/signin', login);
 
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/https?:\/\/[www]?[\da-zA-Z]+#?/),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), createUser);
 
 app.use('/users', auth, usersRouter);
 
@@ -34,6 +43,8 @@ app.use('/cards', auth, cardsRouter);
 app.use((req, res) => {
   res.status(404).send({ message: 'Извините, я не могу это найти!' });
 });
+// обработчики ошибок
+app.use(errors()); // обработчик ошибок celebrate
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
