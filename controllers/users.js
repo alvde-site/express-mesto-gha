@@ -4,6 +4,7 @@ const User = require('../models/user');
 const UnauthorizedError = require('../errors/unauthorized-err');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
+const ConflictError = require('../errors/conflict-error');
 
 // сработает при POST-запросе на URL /users
 module.exports.createUser = (req, res, next) => {
@@ -19,6 +20,9 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new BadRequestError('Переданы некорректные данные при создании пользователя');
+      }
+      if (err.code === 11000) {
+        throw new ConflictError('email уже занят');
       }
     })
     .catch(next);
