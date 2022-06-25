@@ -72,7 +72,7 @@ module.exports.login = (req, res, next) => {
   const { email } = req.body;
 
   return User.findOne({ email }).select('+password')
-    .then((user) => { // аутентификация успешна! пользователь в переменной user
+    .then((user) => {
       // создадим токен
       const token = jwt.sign(
         { _id: user._id },
