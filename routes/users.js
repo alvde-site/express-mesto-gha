@@ -27,6 +27,10 @@ usersRouter.patch('/me', celebrate({
   }).unknown(true),
 }), updateUser);
 
-usersRouter.patch('/me/avatar', updateUserAvatar);
+usersRouter.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().pattern(/https?:\/\/[www]?[\da-zA-Z]+#?/),
+  }).unknown(true),
+}), updateUserAvatar);
 
 module.exports = usersRouter;
