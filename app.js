@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const process = require('process');
 const { celebrate, Joi, errors } = require('celebrate');
 const validator = require('validator');
+const NotFoundError = require('./errors/not-found-err');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -56,8 +57,8 @@ app.use('/users', usersRouter);
 
 app.use('/cards', cardsRouter);
 
-app.use((req, res) => {
-  res.status(404).send({ message: 'Извините, я не могу это найти!' });
+app.use(() => {
+  throw new NotFoundError('Извините, я не могу это найти!');
 });
 // обработчики ошибок
 app.use(errors()); // обработчик ошибок celebrate
