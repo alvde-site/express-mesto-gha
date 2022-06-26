@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
 const { celebrate, Joi, errors } = require('celebrate');
+const validator = require('validator');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -11,6 +12,13 @@ const {
   login,
 } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+
+const validateURL = (value) => {
+  if (!validator.isURL(value, { require_protocol: true })) {
+    throw new Error('Неправильный формат ссылки');
+  }
+  return value;
+};
 
 const { PORT = 3000 } = process.env;
 
@@ -35,7 +43,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/https?:\/\/[www]?[\da-zA-Z]+#?/),
+    avatar: Joi.string().custom(validateURL),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),

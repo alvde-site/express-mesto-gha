@@ -1,5 +1,6 @@
 const usersRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const validator = require('validator');
 
 const {
   getUsers,
@@ -8,6 +9,13 @@ const {
   updateUserAvatar,
   getCurrentUser,
 } = require('../controllers/users');
+
+const validateURL = (value) => {
+  if (!validator.isURL(value, { require_protocol: true })) {
+    throw new Error('Неправильный формат ссылки');
+  }
+  return value;
+};
 
 usersRouter.get('/me', getCurrentUser);
 
@@ -29,7 +37,7 @@ usersRouter.patch('/me', celebrate({
 
 usersRouter.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/https?:\/\/[www]?[\da-zA-Z]+#?/),
+    avatar: Joi.string().custom(validateURL),
   }),
 }), updateUserAvatar);
 
