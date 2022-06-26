@@ -12,6 +12,9 @@ module.exports.getCards = (req, res, next) => {
 module.exports.deleteCards = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточки по указанному_id в БД не найден');
+      }
       const owner = `${card.owner}`;
       if (req.user._id !== owner) {
         throw new ForbiddenError('Нельзя удалить чужую карточку');
@@ -38,10 +41,6 @@ module.exports.deleteCards = (req, res, next) => {
       } else {
         next(err);
       }
-      if (err.name === 'TypeError') {
-        throw new NotFoundError('Карточки по указанному_id в БД не найден');
-      }
-      next(err);
     })
     .catch(next);
 };
@@ -54,9 +53,10 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании карточки');
+        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -75,12 +75,12 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные для постановки лайка');
+        next(new BadRequestError('Переданы некорректные данные для постановки лайка'));
+      } else if (err.name === 'CastError') {
+        next(new BadRequestError('Карточка с указанным _id не найдена'));
+      } else {
+        next(err);
       }
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Карточка с указанным _id не найдена');
-      }
-      next(err);
     });
 };
 
@@ -99,11 +99,11 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные для снятия лайка');
+        next(new BadRequestError('Переданы некорректные данные для снятия лайка'));
+      } else if (err.name === 'CastError') {
+        next(new BadRequestError('Карточка с указанным _id не найдена'));
+      } else {
+        next(err);
       }
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Карточка с указанным _id не найдена');
-      }
-      next(err);
     });
 };
