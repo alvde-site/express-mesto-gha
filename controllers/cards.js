@@ -3,10 +3,10 @@ const ForbiddenError = require('../errors/forbidden-err');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
 module.exports.deleteCards = (req, res, next) => {
@@ -26,14 +26,17 @@ module.exports.deleteCards = (req, res, next) => {
         })
         .catch((err) => {
           if (err.name === 'CastError') {
-            throw new BadRequestError('Карточка с указанным _id не найдена');
+            next(new BadRequestError('Карточка с указанным _id не найдена'));
+          } else {
+            next(err);
           }
-          next(err);
         });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Карточка с указанным _id не найдена');
+        next(new BadRequestError('Карточка с указанным _id не найдена'));
+      } else {
+        next(err);
       }
       if (err.name === 'TypeError') {
         throw new NotFoundError('Карточки по указанному_id в БД не найден');
