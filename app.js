@@ -49,9 +49,12 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 
-app.use('/users', auth, usersRouter);
+// авторизация
+app.use(auth);
 
-app.use('/cards', auth, cardsRouter);
+app.use('/users', usersRouter);
+
+app.use('/cards', cardsRouter);
 
 app.use((req, res) => {
   res.status(404).send({ message: 'Извините, я не могу это найти!' });
