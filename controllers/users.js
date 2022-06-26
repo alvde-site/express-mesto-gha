@@ -24,8 +24,7 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-      }
-      if (err.code === 11000) {
+      } else if (err.code === 11000) {
         next(new ConflictError('email уже занят'));
       } else {
         next(err);
@@ -69,8 +68,9 @@ module.exports.getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Пользователь по указанному _id не найден'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -102,26 +102,14 @@ module.exports.updateUser = (req, res, next) => {
     req.user._id,
     { name, about },
     {
-      new: true,
+      new: true, runValidators: true,
     },
   )
-    .then((user) => {
-      if (
-        user.name.length < 2
-        || user.name.length > 30
-        || user.about.length < 2
-        || user.about.length > 30
-      ) {
-        throw new BadRequestError('Переданы некорректные данные при обновлении профиля');
-      } else {
-        res.send({ data: user });
-      }
-    })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      }
-      if (err.name === 'CastError') {
+      } else if (err.name === 'CastError') {
         next(new NotFoundError('Пользователь по указанному _id не найден'));
       } else {
         next(err);
@@ -143,8 +131,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      }
-      if (err.name === 'CastError') {
+      } else if (err.name === 'CastError') {
         next(new NotFoundError('Пользователь по указанному _id не найден'));
       } else {
         next(err);
