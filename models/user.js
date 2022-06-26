@@ -2,12 +2,6 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 
-const passwordSchema = new mongoose.Schema({
-  password: {
-    type: String,
-    required: true,
-  },
-});
 const userSchema = new mongoose.Schema({
   name: {
     // у пользователя есть имя — опишем требования к имени в схеме:
@@ -41,7 +35,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   password: {
-    password: passwordSchema,
+    type: String,
+    required: true,
     select: false,
   },
 });
